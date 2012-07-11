@@ -44,7 +44,6 @@ int _height = 600;
 // Reference to physics world
 VerletPhysics2D physics;
 AttractionBehavior mouseAttractor;
-Vec2D mousePos;
 
 Flock flock;
 PImage bg;
@@ -53,18 +52,16 @@ PImage bg;
 GSCapture vStream;
 DiffMotion _differ;
 PVector avg;
-
+Vec2D tracked;
 
 void setup()
 {
-  //size(1000,700);
   size(_width,_height);
   bg = loadImage("water.jpg");
   gfx = new ToxiclibsSupport(this);
-
-  mousePos = new Vec2D(mouseX, mouseY);
   avg = new PVector(width/2,height/2);
-
+  tracked = new Vec2D(width/2,height/2);
+  
    // Initialize the physics
   physics=new VerletPhysics2D();
   physics.setDrag(0.05f);
@@ -95,23 +92,22 @@ void draw()
   image(bg, 0,0);
   flock.run();
   
-  //mousePos.x = mouseX; mousePos.y = mouseY; 
   avg = _differ.processFrame();
-  mousePos.x = width-avg.x;mousePos.y = avg.y;
+  tracked.x = width-avg.x;
+  tracked.y = avg.y;
   for (int i = 0; i < 300; i++)
   {
     Boid b = (Boid) flock.boids.get(i);
     if(!mousePressed)
     {
-      b.avoid(mousePos, 100);
+      b.avoid(tracked, 100);
       fill(255,50, 30,100);
     }
     else
     {
-      b.seek(mousePos);
+      b.seek(tracked);
       fill(40,100,230,200);
     }
-    //ellipse(mouseX, mouseY, 5, 5);
     for(int w = 0;w< width;w+=50)
     {
       Vec2D wtBumper = new Vec2D(w, 0);
@@ -130,7 +126,7 @@ void draw()
       b.avoid(hbBumper, 50);
     }
   }
-  ellipse(avg.x,avg.y,5,5);
+  ellipse(tracked.x,tracked.y,5,5);
 }
 
 // Add a new boid into the System
@@ -140,7 +136,7 @@ void mousePressed() {
 
 void stop()
 {
-//  _differ.finished();
+  _differ.finished();
   super.stop();
 }
 

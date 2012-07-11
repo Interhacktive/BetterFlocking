@@ -1,32 +1,3 @@
-/****************************************************************
-Copyright (C) 2012 The Blank Collective
-Released under the FreeBSD License (BSD 2-Clause)
-See LICENSE.pde for details
-***************************************************************/
-
-/***************************************************************
-DiffMotion - Frame differencing based pseudo-motion tracking 
-
-Usage (See DiffTest.pde):
-  DiffMotion myDiffer;
-  PVector avg;
-
-  myDiffer = new DiffMotion(new GSCapture(this,640,480),640,480);
-  myDiffer.init();
-  avg = myDiffer.processFrame();
-  myDiffer.finished();
-  
-Public Members:
-  drawFrame (boolean): Should we draw the current video frame?
-  drawDiff (boolean): Should we draw the difference visualization?
-  thresh (int): pixels below this value are ignored
-    thresh is calculated as max(0,pixel-thresh)
-  threshX/Y (float): Amount between pixels required to register
-    difference as motion
-  dampX/dampY (float): Motion damping between frames
-  
-***************************************************************/
-
 class DiffMotion
 {
   private float avgX;
@@ -35,15 +6,12 @@ class DiffMotion
   private color prvColor;
   private PImage lastFrame;
   
-  boolean drawFrame, drawDiff;  
   int streamWidth, streamHeight, thresh;
   float threshX, threshY, dampX, dampY;
   GSCapture vStream = null;
   
   DiffMotion(GSCapture _vStream, int _streamWidth, int _streamHeight)
   {
-    drawFrame = false;
-    drawDiff = false;
     vStream = _vStream;
     threshX = threshY = 2;
     dampX = dampY = 0.1;
@@ -64,7 +32,6 @@ class DiffMotion
     int diffSum = 0;
     ArrayList<PVector> diffPixels = new ArrayList();
     
-    loadPixels();  
     if(vStream.available())
     {
       vStream.read();
@@ -76,8 +43,6 @@ class DiffMotion
         for (int y=0;y<streamHeight;y++)
         {
           int i = y*streamWidth+x;          
-          if(drawFrame)
-            pixels[i] = vStream.pixels[i];
           curColor = vStream.pixels[i];
           prvColor = lastFrame.pixels[i];
           
@@ -99,13 +64,10 @@ class DiffMotion
           {
             diffSum += tempSum;          
             diffPixels.add(new PVector(x,y));
-            if(drawDiff)
-              pixels[i] = color(0,255,0);
           }
           lastFrame.pixels[i] = curColor;
         }
       }
-      updatePixels();
     }
     PVector avgPoint = avgDiffPixels(diffPixels);
     
