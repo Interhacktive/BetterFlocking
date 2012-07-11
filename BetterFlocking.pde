@@ -35,6 +35,7 @@ import toxi.math.*;
 import toxi.physics2d.*;
 import toxi.physics2d.behaviors.*;
 import toxi.processing.*;
+import codeanticode.gsvideo.*;
 
 ToxiclibsSupport gfx;
 
