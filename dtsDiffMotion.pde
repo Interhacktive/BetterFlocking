@@ -14,7 +14,7 @@ class DiffMotion
   {
     vStream = _vStream;
     threshX = threshY = 2;
-    dampX = dampY = 0.1;
+    dampX = dampY = 0.5;
     thresh = 32;
     streamWidth = _streamWidth;
     streamHeight = _streamHeight;

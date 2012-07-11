@@ -9,7 +9,7 @@ class Boid extends VerletParticle2D{
   float r;
   float maxforce;
   float maxspeed;
-  color fishColor = color(random(230,255),random(230,255),random(0,100),200);
+  color fishColor = color(random(230,255),random(230,255),random(0,100),150);
   
    
 //  Boid(Vec2D pos) {
@@ -140,9 +140,9 @@ void avoid (Vec2D target, float desiredseparation) {
     */
     //ellipse(loc.x, loc.y, 10, 10);
     //stroke(255,255, 255, 200);
-    
+    int tailLength = 10;
     //fish tail
-    Vec2D m=new Vec2D(loc.x+(vel.x*3),loc.y+(vel.y*3));
+    Vec2D m=new Vec2D(loc.x+(vel.x*tailLength),loc.y+(vel.y*tailLength));
   Vec2D o=new Vec2D(loc.x+(vel.x*-1), loc.y+(vel.y*-1));
   Vec2D n=m.sub(o).perpendicular().normalizeTo(random(8,10));
   Triangle2D t = new Triangle2D(o.sub(n),m,o.add(n));
@@ -154,22 +154,22 @@ noStroke();
     //fish body
     stroke(fishColor);
     strokeWeight(5);
-    line(loc.x, loc.y, loc.x+(vel.x*3), loc.y+(vel.y*3));
+    line(loc.x, loc.y, loc.x+(vel.x*tailLength), loc.y+(vel.y*tailLength));
     
     //fish head
     noStroke();
     fill(fishColor);
-    ellipse(loc.x+(vel.x*3),loc.y+(vel.y*3),15,15);
+    ellipse(loc.x+(vel.x*tailLength),loc.y+(vel.y*tailLength),15,15);
     
     //white part of eye
     fill(255, 255);
     noStroke();
-    ellipse(loc.x+(vel.x*3),loc.y+(vel.y*3), 4, 4);
+    ellipse(loc.x+(vel.x*tailLength),loc.y+(vel.y*tailLength), 4, 4);
     
     //fish pupil
     fill(0, 255);
     noStroke();
-    ellipse(loc.x+(vel.x*3),loc.y+(vel.y*3)-2, 2, 2);
+    ellipse(loc.x+(vel.x*tailLength),loc.y+(vel.y*tailLength)-2, 2, 2);
     
     
       

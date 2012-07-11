@@ -39,8 +39,8 @@ import codeanticode.gsvideo.*;
 
 ToxiclibsSupport gfx;
 
-int _width = 800;
-int _height = 600;
+int _width = 640;
+int _height = 480;
 // Reference to physics world
 VerletPhysics2D physics;
 AttractionBehavior mouseAttractor;
@@ -70,9 +70,10 @@ void setup()
   
   flock = new Flock();
   // Add an initial set of boids into the system
-  for (int i = 0; i < 300; i++)
+  for (int i = 0; i < 100; i++)
   {
-    flock.addBoid(new Boid(new Vec2D(width/2,height/2),6.0,0.15)); // default speed 3.0, force 0.05
+    flock.addBoid(new Boid(new Vec2D(width/2,height/2),1.5,0.05)); // default speed 3.0, force 0.05
+      //also tried speed 6.0 and 0.15 with good results
     VerletParticle2D pi = (VerletParticle2D) flock.boids.get(i);
     physics.addParticle(pi);
     physics.addBehavior(new AttractionBehavior(pi, 20, -1.2f, 0.01f));
@@ -81,7 +82,9 @@ void setup()
   noCursor();
   
   //startup motion tracking
-  vStream = new GSCapture(this, _width, _height);
+   
+  vStream = new GSCapture(this, _width, _height, "CamTwist");
+  
   _differ = new DiffMotion(vStream, _width, _height);
   _differ.init();
 }
@@ -90,17 +93,29 @@ void draw()
 {
   background(255);
   image(bg, 0,0);
+  if (vStream.available() == true) {
+    vStream.read();
+
+  }
+   // image(vStream, _width, _height, -_width, -_height);
+   //image(vStream, 0,0);
+  
+    // The following does the same, and is faster when just drawing the image
+    // without any additional resizing, transformations, or tint.
+    set(0, 0, vStream);
+  //}
   flock.run();
   
   avg = _differ.processFrame();
-  tracked.x = width-avg.x;
+  tracked.x = avg.x;//width-avg.x;
   tracked.y = avg.y;
-  for (int i = 0; i < 300; i++)
+  
+  for (int i = 0; i < 100; i++)
   {
     Boid b = (Boid) flock.boids.get(i);
     if(!mousePressed)
     {
-      b.avoid(tracked, 100);
+      b.avoid(tracked, 75);
       fill(255,50, 30,100);
     }
     else
@@ -108,13 +123,13 @@ void draw()
       b.seek(tracked);
       fill(40,100,230,200);
     }
-    for(int w = 0;w< width;w+=50)
+    for(int w = 0;w< width;w+=25)
     {
-      Vec2D wtBumper = new Vec2D(w, 0);
-      b.avoid(wtBumper, 50);
+      Vec2D wtBumper = new Vec2D(w, 25);
+      b.avoid(wtBumper, 75);
       
-      Vec2D wbBumper = new Vec2D(w, height);
-      b.avoid(wbBumper, 50);
+      Vec2D wbBumper = new Vec2D(w, height-25);
+      b.avoid(wbBumper, 75);
     }
     
     for(int h = 0;h< height;h+=50)
@@ -125,6 +140,10 @@ void draw()
       Vec2D hbBumper = new Vec2D(width,h);
       b.avoid(hbBumper, 50);
     }
+     Vec2D misc = new Vec2D(25, 50);
+      b.avoid(misc, 150);
+      misc = new Vec2D(width-25, 50);
+      b.avoid(misc, 150);
   }
   ellipse(tracked.x,tracked.y,5,5);
 }
